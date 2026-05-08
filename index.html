@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>猜数字游戏 - AxBy</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>猜数字游戏 (AxBy)</h1>
+            <div class="difficulty-selector">
+                <button class="diff-btn active" data-difficulty="entry">入门</button>
+                <button class="diff-btn" data-difficulty="easy">简单</button>
+                <button class="diff-btn" data-difficulty="medium">中等</button>
+                <button class="diff-btn" data-difficulty="expert">专家</button>
+            </div>
+        </header>
+
+        <main>
+            <div class="game-info">
+                <div class="stats">
+                    <span>剩余次数: <span id="remaining-tries">∞</span></span>
+                    <button id="new-game-btn">新游戏</button>
+                </div>
+                <div class="current-guess-display">
+                    <div class="digit-box" id="digit-0"></div>
+                    <div class="digit-box" id="digit-1"></div>
+                    <div class="digit-box" id="digit-2"></div>
+                </div>
+                <div id="game-status" class="status-msg">准备开始！</div>
+            </div>
+
+            <div class="keyboard">
+                <div class="keys-row">
+                    <button class="key" data-val="1">1</button>
+                    <button class="key" data-val="2">2</button>
+                    <button class="key" data-val="3">3</button>
+                </div>
+                <div class="keys-row">
+                    <button class="key" data-val="4">4</button>
+                    <button class="key" data-val="5">5</button>
+                    <button class="key" data-val="6">6</button>
+                </div>
+                <div class="keys-row">
+                    <button class="key" data-val="7">7</button>
+                    <button class="key" data-val="8">8</button>
+                    <button class="key" data-val="9">9</button>
+                </div>
+                <div class="keys-row">
+                    <button class="key special" id="undo-btn">撤销</button>
+                    <button class="key" data-val="0">0</button>
+                    <button class="key special" id="submit-btn">提交</button>
+                </div>
+            </div>
+
+            <div class="hint-container">
+                <button id="hint-btn">获取提示</button>
+                <div id="hint-display"></div>
+            </div>
+
+            <div class="history-container">
+                <h3>猜测历时</h3>
+                <ul id="history-list">
+                    <!-- 历史记录将在这里生成 -->
+                </ul>
+            </div>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
