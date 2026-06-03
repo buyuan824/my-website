@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VibeCoding 标准工作流</title>
+<style>
+  :root {
+    --bg: #f8f9fb;
+    --card-bg: #ffffff;
+    --text: #1a1a2e;
+    --text-secondary: #5a5d6e;
+    --accent: #5567ff;
+    --accent-light: #eef0ff;
+    --do-bg: #ecfdf5;
+    --do-border: #a7f3d0;
+    --do-text: #065f46;
+    --do-icon: #10b981;
+    --dont-bg: #fef2f2;
+    --dont-border: #fecaca;
+    --dont-text: #991b1b;
+    --dont-icon: #ef4444;
+    --divider: #e5e7eb;
+    --tag-dev: #5567ff;
+    --tag-iter: #8b5cf6;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-hover: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===== Header ===== */
+  .hero {
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #a855f7 100%);
+    color: #fff;
+    text-align: center;
+    padding: 64px 24px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(ellipse at 30% 50%, rgba(255,255,255,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 30%, rgba(255,255,255,0.05) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .hero h1 {
+    font-size: 2.6rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    position: relative;
+    margin-bottom: 12px;
+  }
+  .hero .subtitle {
+    font-size: 1.1rem;
+    opacity: 0.85;
+    font-weight: 400;
+    position: relative;
+  }
+  .hero .badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.18);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 20px;
+    padding: 4px 18px;
+    font-size: 0.85rem;
+    margin-top: 16px;
+    position: relative;
+  }
+
+  /* ===== Container ===== */
+  .container {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ===== Phase Header ===== */
+  .phase {
+    margin: 48px 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .phase-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+  }
+  .phase-icon.before { background: #eef0ff; }
+  .phase-icon.during { background: #f3e8ff; }
+  .phase h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .phase .chip {
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 3px 12px;
+    border-radius: 12px;
+    margin-left: auto;
+  }
+  .chip.before { background: #eef0ff; color: var(--tag-dev); }
+  .chip.during { background: #f3e8ff; color: var(--tag-iter); }
+
+  /* ===== Step Card ===== */
+  .step {
+    background: var(--card-bg);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+    overflow: hidden;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    border: 1px solid var(--divider);
+  }
+  .step:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-1px);
+  }
+
+  .step-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 24px 28px 0;
+  }
+  .step-num {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800;
+    font-size: 1rem;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .step-num.s { background: var(--tag-dev); }
+  .step-num.p { background: var(--tag-iter); }
+  .step-title-area h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .step-title-area .step-desc {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  .step-body { padding: 16px 28px 24px; }
+  .step-body p { margin-bottom: 14px; color: var(--text-secondary); font-size: 0.93rem; }
+
+  /* ===== Do / Don't boxes ===== */
+  .callout {
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 14px;
+    font-size: 0.92rem;
+    line-height: 1.65;
+    position: relative;
+  }
+  .callout::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 10px; bottom: 10px;
+    width: 4px;
+    border-radius: 2px;
+  }
+  .callout.do {
+    background: var(--do-bg);
+    border: 1px solid var(--do-border);
+  }
+  .callout.do::before { background: var(--do-icon); }
+  .callout.dont {
+    background: var(--dont-bg);
+    border: 1px solid var(--dont-border);
+  }
+  .callout.dont::before { background: var(--dont-icon); }
+  .callout strong {
+    display: flex; align-items: center; gap: 6px;
+    margin-bottom: 6px;
+    font-size: 0.88rem;
+  }
+  .callout.do strong { color: var(--do-text); }
+  .callout.dont strong { color: var(--dont-text); }
+  .callout .icon { font-size: 1.1rem; }
+
+  /* ===== Extra inline items ===== */
+  .inline-badge {
+    display: inline-block;
+    background: #f1f5f9;
+    border-radius: 6px;
+    padding: 2px 10px;
+    font-size: 0.83rem;
+    font-weight: 600;
+    color: #475569;
+    margin-right: 4px;
+  }
+
+  /* ===== Highlighted note ===== */
+  .highlight-block {
+    background: #fffbe6;
+    border: 1px solid #fde68a;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 14px;
+    font-size: 0.9rem;
+    color: #92400e;
+    line-height: 1.65;
+  }
+  .highlight-block strong { color: #b45309; }
+
+  /* ===== Footer ===== */
+  .footer {
+    text-align: center;
+    padding: 48px 24px 32px;
+    color: #9ca3af;
+    font-size: 0.85rem;
+  }
+  .footer .divider-line {
+    width: 60px; height: 3px;
+    background: linear-gradient(90deg, #4f46e5, #a855f7);
+    border-radius: 2px;
+    margin: 0 auto 16px;
+  }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 640px) {
+    .hero { padding: 40px 20px 32px; }
+    .hero h1 { font-size: 1.8rem; }
+    .step-header { padding: 20px 18px 0; }
+    .step-body { padding: 12px 18px 20px; }
+    .container { padding: 0 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<header class="hero">
+  <h1>VibeCoding 标准工作流</h1>
+  <p class="subtitle">AI 辅助开发的最佳实践 —— 从需求到交付的结构化方法论</p>
+  <div class="badge">8 步准备 + 4 步迭代 = 可控的 AI 协作</div>
+</header>
+
+<div class="container">
+
+  <!-- ===== PHASE: 开发前 ===== -->
+  <div class="phase">
+    <div class="phase-icon before">📋</div>
+    <h2>开发前</h2>
+    <span class="chip before">8 步准备</span>
+  </div>
+
+  <!-- S1 -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num s">S1</div>
+      <div class="step-title-area">
+        <h3>需求澄清</h3>
+        <p class="step-desc">在写任何文档之前，先用 AI 把脑子里模糊的想法问清楚。不断追问、拆解、澄清，直到你能说清楚"我要做什么"。</p>
+      </div>
+    </div>
+    <div class="step-body">
+      <div class="callout do">
+        <strong><span class="icon">✅</span> 核心做法</strong>
+        把粗糙想法告诉 AI，让它扮演产品顾问，不断追问边界、优先级、用户场景，直到产出清晰的需求摘要。
+      </div>
+      <div class="callout dont">
+        <strong><span class="icon">⚠️</span> 常见误区</strong>
+        直接跳到写 PRD，结果写到一半发现需求本身没想清楚，返工成本极高。
+      </div>
+    </div>
+  </div>
+
+  <!-- S2 -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num s">S2</div>
+      <div class="step-title-area">
+        <h3>编写可执行 PRD</h3>
+        <p class="step-desc">把澄清结果写成 AI 能直接执行的产品文档，每个功能必须有输入、处理、输出三要素，明确写清楚做什么和不做什么。</p>
+      </div>
+    </div>
+    <div class="step-body">
+      <div class="callout do">
+        <strong><span class="icon">✅</span> 核心做法</strong>
+        每个功能用"用户输入 X → 系统处理 Y → 返回结果 Z"格式描述；文档末尾单独列"功能边界"一节，把本期不做的东西显式写出。
+      </div>
+      <div class="callout dont">
+        <strong><span class="icon">⚠️</span> 常见误区</strong>
+        只写正常路径，不写错误态和空状态，AI 遇到这些场景就会自己发挥。
+      </div>
+    </div>
+  </div>
+
+  <!-- S3 -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num s">S3</div>
+      <div class="step-title-area">
+        <h3>锁定视觉基准</h3>
+        <p class="step-desc">在 AI 写界面代码之前，告诉它 UI 应该长什么样。没有视觉锚点，AI 每次都自己决定，结果风格混乱、组件无法复用。</p>
+      </div>
+    </div>
+    <div class="step-body">
+      <div class="callout do">
+        <strong><span class="icon">✅</span> 核心做法</strong>
+        声明组件库（推荐新手：Shadcn/UI 或 Ant Design）+ 提供参考截图或 Figma 链接 + 写一句设计基调说明，例如"极简风格，主色 <code>#1A3C5E</code>，桌面端优先"。
+      </div>
+      <div class="callout dont">
+        <strong><span class="icon">⚠️</span> 常见误区</strong>
+        认为 UI 可以最后再统一——AI 生成的 UI 一旦散乱，重构成本远比一开始规范高。
+      </div>
+    </div>
+  </div>
+
+  <!-- S4 -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num s">S4</div>
+      <div class="step-title-area">
+        <h3>锁技术栈</h3>
+        <p class="step-desc">把语言、框架、核心依赖和版本号全部确定。不指定，AI 就会混用不同年代的写法，甚至引入两套状态管理方案。</p>
+      </div>
+    </div>
+    <div class="step-body">
+      <div class="callout do">
+        <strong><span class="icon">✅</span> 核心做法</strong>
+        列清单：语言版本 + 核心框架 + 包管理工具 + 数据库 + 部署平台。不确定就请 AI 给 2-3 个方案，说明优劣，你来最终决策。
+      </div>
+      <div class="callout dont">
+        <strong><span class="icon">⚠️</span> 常见误区</strong>
+        技术栈定了之后中途换——前期生成的代码需要大量重构。
+      </div>
+    </div>
+  </div>
+
+  <!-- S5 -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num s">S5</div>
+      <div class="step-title-area">
+        <h3>草绘系统架构</h3>
+        <p class="step-desc">用文字或简图描述模块划分和主要数据流向。给 AI 一张结构蓝图，它才知道代码应该放在哪里。</p>
+      </div>
+    </div>
+    <div class="step-body">
+      <div class="callout do">
+        <strong><span class="icon">✅</span> 核心做法</strong>
+        描述三件事——系统分几层（前端 / API / 数据）、主要模块之间是什么关系、一个典型用户操作的数据流从哪里来到哪里去。
+      </div>
+      <div class="callout dont">
+        <strong><span class="icon">⚠️</span> 常见误区</strong>
+        把架构设计完全交给 AI 决定，然后在它决定的结构上继续开发——这意味着你对自己项目的结构没有掌控。
+      </div>
+    </div>
+  </div>
+
+  <!-- S6 -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num s">S6</div>
+      <div class="step-title-area">
+        <h3>制定编码规范</h3>
+        <p class="step-desc">定义代码"长什么样"：文件夹结构、命名约定、组件写法顺序、注释要求。没有规范，两周后你的项目像五个人写的。</p>
+      </div>
+    </div>
+    <div class="step-body">
+      <div class="callout do">
+        <strong><span class="icon">✅</span> 核心做法</strong>
+        至少定三件事——文件夹结构（components/ pages/ hooks/ utils/）、命名规则（组件 PascalCase，函数 camelCase）、注释要求（公共函数必须有注释）。把规范直接写进 AI 的上下文。
+      </div>
+      <div class="callout dont">
+        <strong><span class="icon">⚠️</span> 常见误区</strong>
+        规范写了但没放进 AI 的输入里，等于没写。
+      </div>
+    </div>
+  </div>
+
+  <!-- S7 -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num s">S7</div>
+      <div class="step-title-area">
+        <h3>建立版本保护</h3>
+        <p class="step-desc">在开始 AI 辅助开发之前就建好 Git 回滚机制。没有 Git，只能从头来；有了 Git，一条命令回到 5 分钟前。</p>
+      </div>
+    </div>
+    <div class="step-body">
+      <div class="callout do">
+        <strong><span class="icon">✅</span> 核心做法</strong>
+        初始化仓库 + 做第一次 commit + 确定提交节奏（每完成一个功能点就提交一次）+ .gitignore 里写好 .env，避免密钥泄露。
+      </div>
+      <div class="callout dont">
+        <strong><span class="icon">⚠️</span> 常见误区</strong>
+        "小项目不需要 Git"——AI 协作速度很快，出错也很快，项目规模不是问题，<em>协作方式</em>才是。
+      </div>
+    </div>
+  </div>
+
+  <!-- S8 -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num s">S8</div>
+      <div class="step-title-area">
+        <h3>打包 AI 上下文</h3>
+        <p class="step-desc">把 S1-S7 的关键决策浓缩成 300-600 字文档，每次新对话作为第一条输入。AI 没有跨对话记忆，不注入上下文就会失忆后自行发挥。</p>
+      </div>
+    </div>
+    <div class="step-body">
+      <div class="callout do">
+        <strong><span class="icon">✅</span> 核心做法</strong>
+        文档包含：项目一句话介绍、核心功能清单、技术栈、功能边界（做/不做）、特殊约定。存成 CONTEXT.md，用 Cursor 的 .cursorrules 或 Claude Projects 系统 prompt 自动注入。
+      </div>
+      <div class="highlight-block">
+        <strong>💡 特别注意：</strong>这是 8 步里最容易被跳过、但对长期质量影响最大的一步。项目越大，这份文档价值越高。
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PHASE: 开发中 ===== -->
+  <div class="phase">
+    <div class="phase-icon during">⚡</div>
+    <h2>开发中</h2>
+    <span class="chip during">4 步迭代</span>
+  </div>
+
+  <!-- P1 -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num p">P1</div>
+      <div class="step-title-area">
+        <h3>小步迭代</h3>
+        <p class="step-desc">每次给 AI 的任务只做一件事，完成、测试、确认后再推进下一步。AI 生成代码的准确率和任务规模负相关。</p>
+      </div>
+    </div>
+    <div class="step-body">
+      <div class="callout do">
+        <strong><span class="icon">✅</span> 核心做法</strong>
+        <strong>好的粒度：</strong>"帮我实现登录表单的前端校验，暂不处理接口调用"<br>
+        <strong>坏的粒度：</strong>"帮我把登录注册找回密码个人信息页全部做了"<br><br>
+        每个迭代周期对应一次 commit，改坏了立刻能回滚。
+      </div>
+      <div class="callout dont">
+        <strong><span class="icon">⚠️</span> 常见误区</strong>
+        贪心一次性塞太多需求，导致 AI 生成质量下降、排查困难。
+      </div>
+    </div>
+  </div>
+
+  <!-- P2 -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num p">P2</div>
+      <div class="step-title-area">
+        <h3>主动卡点审查</h3>
+        <p class="step-desc">在关键节点主动进行人工审查，而不是让 AI 一路跑下去。AI 会"自信地犯错"——代码语法正确，逻辑和业务可能是偏的。</p>
+      </div>
+    </div>
+    <div class="step-body">
+      <div class="callout do">
+        <strong><span class="icon">✅</span> 核心做法</strong>
+        每完成 2-3 个迭代做一次整体 review；对核心逻辑要理解代码在做什么，不只看运行结果；用第二个 AI 对话窗口来审查第一个 AI 写的代码。
+      </div>
+      <div class="callout dont">
+        <strong><span class="icon">⚠️</span> 常见误区</strong>
+        Cursor 的 Auto-accept 功能要谨慎开——方便的背后是你放弃了审查权。
+      </div>
+    </div>
+  </div>
+
+  <!-- P3 -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num p">P3</div>
+      <div class="step-title-area">
+        <h3>收紧安全边界</h3>
+        <p class="step-desc">包含操作权限和代码安全两件事，缺一不可。</p>
+      </div>
+    </div>
+    <div class="step-body">
+      <div class="callout do">
+        <strong><span class="icon">✅</span> 核心做法</strong>
+        <strong>操作权限：</strong>用 .cursorignore 指定 AI 不得修改的文件；prompt 里明确"只修改这一个文件"；敏感操作始终人工触发。<br><br>
+        <strong>代码安全：</strong>所有密钥存 .env；AI 完成后追问"这里有什么安全隐患"；新引入的 npm 包先查下载量和已知漏洞。
+      </div>
+      <div class="callout dont">
+        <strong><span class="icon">⚠️</span> 常见误区</strong>
+        只关注功能实现，忽略安全和权限边界，为项目埋下隐患。
+      </div>
+    </div>
+  </div>
+
+  <!-- P4 -->
+  <div class="step">
+    <div class="step-header">
+      <div class="step-num p">P4</div>
+      <div class="step-title-area">
+        <h3>结构化排错</h3>
+        <p class="step-desc">遇到报错，先做基本分析再结构化描述问题，而不是直接把错误信息粘给 AI。</p>
+      </div>
+    </div>
+    <div class="step-body">
+      <div class="callout do">
+        <strong><span class="icon">✅</span> 核心做法</strong>
+        <strong>排错四步：</strong><br>
+        1. 读懂报错（错误类型 + 位置）<br>
+        2. 最近做了什么改动<br>
+        3. 期望行为 vs 实际行为<br>
+        4. 已试过什么方案
+      </div>
+      <div class="highlight-block">
+        <strong>🔄 最常见陷阱：</strong>"AI 修 → 报新错 → AI 继续修"的无限循环。设定上限：同一个问题 AI 修 2-3 次没解决，换方向——查官方文档、换实现方案、把需求简化。
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="divider-line"></div>
+  <p>VibeCoding 标准工作流 &mdash; 让 AI 协作可控、可复现、可信任</p>
+</footer>
+
+</body>
+</html>
